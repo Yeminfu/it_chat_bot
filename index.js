@@ -4,7 +4,7 @@ import handleMyMessage from "./src/handleMyMessage/handleMyMessage.js";
 import handleClientMessage from "./src/handleClientMessage/handleClientMessage.js";
 
 (function () {
-    console.log('go');
+    console.log('#vdf go');
     if (!process.env.TELEGRAM_TOKEN) {
         console.log('err #1 no token');
         return;
