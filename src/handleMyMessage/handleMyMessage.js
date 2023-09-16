@@ -1,4 +1,7 @@
+import { getUserIdByTelegramChatId } from "../db/getUserIdByTelegramChatId.js";
+import { pool } from "../db/connect.js";
 export default async function handleMyMessage(bot, msg) {
+
     // console.log('my message');
     const { message_id, from, chat, date, text } = msg;
     const { id, first_name, last_name, username } = chat;
@@ -17,6 +20,23 @@ export default async function handleMyMessage(bot, msg) {
     if (!cmd || !userId) { bot.sendMessage(process.env.MY_ID, 'err #14 UNKNOWN FORMAT'); return; }
 
     // console.log('otherRows', otherRows);
+    console.log('userId', userId);
+    const userIdInDb = await getUserIdByTelegramChatId(userId);
+    console.log('userIdInDb', userIdInDb);
+    // console.log('userIdInDb', userIdInDb);
+
+    pool.query(
+        "INSERT INTO messages (to_user, text, full_message) VALUES (?,?,?)",
+        [userIdInDb, text, JSON.stringify(msg)],
+        function (err, res) {
+            if (err) {
+                console.log('err #sdd4kv', err);
+            }
+            console.log('res', res);
+        }
+    )
+
+    return;
 
 
     if (!commands.find(x => x === cmd.toLowerCase())) { bot.sendMessage(process.env.MY_ID, 'err #13 UNKNOWN COMMAND'); return; }
