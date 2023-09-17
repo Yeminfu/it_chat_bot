@@ -8,18 +8,6 @@ export default async function handleClientMessage(bot, msg) {
     const { message_id, from: { id: telegramChatId }, chat, date, text } = msg;
     const { id, first_name, last_name, username } = chat;
 
-    if (text === "/start") {
-        pool.query(
-            "INSERT INTO users (tg_username, tg_id) VALUES (?,?)",
-            [username, id],
-            function (err, res) {
-                if (err) {
-                    console.log('err #sdk44fv', err);
-                }
-            }
-        )
-    }
-
     const userId = await getUserIdByTelegramChatId(telegramChatId);
 
     if (userId) {
@@ -34,10 +22,23 @@ export default async function handleClientMessage(bot, msg) {
         )
     }
 
-
     const message = [first_name || "_", id || "-", username, text].join(", ");
 
     if (text === "/start") {
+
+
+        pool.query(
+            "INSERT INTO users (tg_username, tg_id) VALUES (?,?)",
+            [username, id],
+            function (err, res) {
+                if (err) {
+                    console.log('err #sdk44fv', err);
+                }
+            }
+        )
+
+
+
         await bot.sendMessage(process.env.MY_ID, `Зашел новый пользователь (${message})`);
         setTimeout(async () => {
             await bot.sendMessage(id, intro);
@@ -55,7 +56,7 @@ export default async function handleClientMessage(bot, msg) {
                     console.log('res', res);
                 }
             )
-            
+
             pool.query(
                 "INSERT INTO messages (to_user, text, full_message) VALUES (?,?,?)",
                 [tg_id, intro, ""],
@@ -63,13 +64,11 @@ export default async function handleClientMessage(bot, msg) {
                     if (err) {
                         console.log('err #sdd4kv', err);
                     }
-                    console.log('res', res);
                 }
             )
 
         }, generateRandom());
     } else {
-
         await bot.sendMessage(process.env.MY_ID, `Пришло сообщение (${message})`);
         await bot.sendMessage(process.env.MY_ID, id);
 
