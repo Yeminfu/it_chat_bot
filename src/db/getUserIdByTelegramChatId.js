@@ -1,4 +1,4 @@
-import {pool} from "./connect.js";
+import { pool } from "./connect.js";
 
 export async function getUserIdByTelegramChatId(telegram_chat_id) {
     return await new Promise(resolve => {
